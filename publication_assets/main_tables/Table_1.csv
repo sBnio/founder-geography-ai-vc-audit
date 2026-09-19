@@ -1,0 +1,11 @@
+Item,Value,Source / note
+Fictional startup scenarios,8,Frozen design
+Model families,3,Claude Opus 5; Gemini 3.6 Flash; GPT-5.6 Sol
+Repetitions per cell,3,Stateless repeated calls
+Normal labeled responses,144,8 × 2 countries × 3 models × 3 repetitions
+Anonymous responses,72,8 × 1 anonymous version × 3 models × 3 repetitions
+Mitigation responses,144,8 × 2 countries × 3 models × 3 repetitions
+Total valid responses,360,Final processed sample
+QA-passing responses,360,360/360
+Exact duplicate responses,0,None
+Retained warning/manual-review flags,333,Retained as model behavior; not exclusions

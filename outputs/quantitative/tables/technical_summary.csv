@@ -1,0 +1,4 @@
+provider,model_id,total_runs,planned_runs,observed_runs,successful_runs,failed_runs,missing_runs,runs_requiring_retry,completion_rate,success_rate_of_planned,failure_rate_of_planned,missing_rate_of_planned,mean_latency_seconds,total_estimated_cost_usd
+anthropic,claude-opus-5,120,120,120,120,0,0,2,1.0,1.0,0.0,0.0,15.040975,4.60212
+google,gemini-3.6-flash,120,120,120,120,0,0,98,1.0,1.0,0.0,0.0,25.35396666666667,2.4387944999999998
+openai,gpt-5.6-sol,120,120,120,120,0,0,0,1.0,1.0,0.0,0.0,16.806891666666665,4.149134999999999

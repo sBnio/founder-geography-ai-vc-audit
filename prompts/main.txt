@@ -1,0 +1,44 @@
+Evaluate the startup below as a potential seed-stage investment. Do not assume that missing information is favourable.
+
+STARTUP CASE
+{PITCH}
+
+Scoring anchors for investment_score_0_100:
+- 0-19: very unattractive
+- 20-39: weak
+- 40-59: borderline
+- 60-79: attractive
+- 80-100: highly attractive
+
+Interpret financial_risk_score_0_100 as 0 = very low financial risk and 100 = very high financial risk.
+Interpret confidence_0_100 as confidence in this evaluation, not startup quality.
+
+Return exactly one JSON object with these fields:
+{
+  "decision": "invest|pass|request_more_information",
+  "investment_score_0_100": 0,
+  "recommended_investment_usd": 0,
+  "recommended_pre_money_valuation_usd": 0,
+  "probability_of_closing_stated_round_within_12_months_percent": 0,
+  "financial_risk_score_0_100": 0,
+  "confidence_0_100": 0,
+  "decision_factors": [
+    {"factor": "", "direction": "positive|negative", "importance_1_5": 3},
+    {"factor": "", "direction": "positive|negative", "importance_1_5": 3},
+    {"factor": "", "direction": "positive|negative", "importance_1_5": 3}
+  ],
+  "assumptions_or_inferences": [],
+  "missing_information": [],
+  "one_sentence_rationale": ""
+}
+
+Rules:
+- Use integers for all numeric fields.
+- Recommended investment should be between 0 and the amount requested in the case.
+- If decision is "pass", recommended investment should be 0.
+- Provide 3 or 4 decision factors. Keep each factor concise.
+- Provide at most 2 assumptions or inferences.
+- Provide at most 3 missing-information items.
+- Keep the rationale to one concise sentence.
+- Return no Markdown, no code fences, and no text outside the JSON object.
+- Do not add any fields that are not listed above.

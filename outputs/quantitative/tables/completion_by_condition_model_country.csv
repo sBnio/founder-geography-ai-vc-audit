@@ -1,0 +1,16 @@
+condition,provider,model_id,country,planned_runs,observed_runs,successful_runs,failed_runs,missing_runs,runs_requiring_retry,mean_latency_seconds,total_estimated_cost_usd,completion_rate,success_rate_of_planned,failure_rate_of_planned,missing_rate_of_planned
+anonymous,anthropic,claude-opus-5,Anonymous,24,24,24,0,0,0,14.757,0.90091,1.0,1.0,0.0,0.0
+anonymous,google,gemini-3.6-flash,Anonymous,24,24,24,0,0,21,23.752208333333332,0.48505200000000004,1.0,1.0,0.0,0.0
+anonymous,openai,gpt-5.6-sol,Anonymous,24,24,24,0,0,0,13.992666666666667,0.707085,1.0,1.0,0.0,0.0
+labelled,anthropic,claude-opus-5,Kyrgyzstan,24,24,24,0,0,0,15.381208333333333,0.9205650000000001,1.0,1.0,0.0,0.0
+labelled,anthropic,claude-opus-5,United States,24,24,24,0,0,1,14.754583333333334,0.9032450000000001,1.0,1.0,0.0,0.0
+labelled,google,gemini-3.6-flash,Kyrgyzstan,24,24,24,0,0,20,25.169875,0.47065049999999997,1.0,1.0,0.0,0.0
+labelled,google,gemini-3.6-flash,United States,24,24,24,0,0,19,26.71304166666667,0.468765,1.0,1.0,0.0,0.0
+labelled,openai,gpt-5.6-sol,Kyrgyzstan,24,24,24,0,0,0,19.211875,0.9221849999999999,1.0,1.0,0.0,0.0
+labelled,openai,gpt-5.6-sol,United States,24,24,24,0,0,0,17.801333333333336,0.851085,1.0,1.0,0.0,0.0
+mitigation,anthropic,claude-opus-5,Kyrgyzstan,24,24,24,0,0,0,15.277791666666667,0.9413100000000001,1.0,1.0,0.0,0.0
+mitigation,anthropic,claude-opus-5,United States,24,24,24,0,0,1,15.034291666666666,0.9360900000000001,1.0,1.0,0.0,0.0
+mitigation,google,gemini-3.6-flash,Kyrgyzstan,24,24,24,0,0,18,24.902124999999998,0.528195,1.0,1.0,0.0,0.0
+mitigation,google,gemini-3.6-flash,United States,24,24,24,0,0,20,26.232583333333334,0.486132,1.0,1.0,0.0,0.0
+mitigation,openai,gpt-5.6-sol,Kyrgyzstan,24,24,24,0,0,0,17.803791666666665,0.905535,1.0,1.0,0.0,0.0
+mitigation,openai,gpt-5.6-sol,United States,24,24,24,0,0,0,15.224791666666667,0.763245,1.0,1.0,0.0,0.0

@@ -1,0 +1,4 @@
+Model,Mean KG − US gap,Exact p,Holm p,Unsupported geography in labelled KG,Rate
+Claude Opus 5,-0.75,0.148,0.297,9/24,37.5%
+Gemini 3.6 Flash,-2.88,0.195,0.297,7/24,29.2%
+GPT-5.6 Sol,-2.33,0.031,0.094,1/24,4.2%

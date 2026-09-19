@@ -1,0 +1,49 @@
+scenario_id,model_id,country,n_valid,score_mean,score_sd,score_min,score_max,decision_nunique,score_range,decisions_identical,eligible_for_variability_summary
+B01,claude-opus-5,Kyrgyzstan,3,40.333333333333336,4.509249752822894,36,45,2,9,False,True
+B01,claude-opus-5,United States,3,40.666666666666664,5.507570547286103,37,47,2,10,False,True
+B01,gemini-3.6-flash,Kyrgyzstan,3,39.333333333333336,2.3094010767585034,38,42,1,4,True,True
+B01,gemini-3.6-flash,United States,3,56.666666666666664,16.289055630494158,38,68,2,30,False,True
+B01,gpt-5.6-sol,Kyrgyzstan,3,66.33333333333333,2.081665999466134,64,68,2,4,False,True
+B01,gpt-5.6-sol,United States,3,68.66666666666667,1.5275252316519463,67,70,1,3,True,True
+B04,claude-opus-5,Kyrgyzstan,3,33.666666666666664,3.511884584284247,30,37,1,7,True,True
+B04,claude-opus-5,United States,3,32.666666666666664,0.5773502691896263,32,33,1,1,True,True
+B04,gemini-3.6-flash,Kyrgyzstan,3,33.666666666666664,1.5275252316519456,32,35,1,3,True,True
+B04,gemini-3.6-flash,United States,3,35.333333333333336,0.5773502691896263,35,36,1,1,True,True
+B04,gpt-5.6-sol,Kyrgyzstan,3,58.333333333333336,4.509249752822894,54,63,2,9,False,True
+B04,gpt-5.6-sol,United States,3,57.0,1.0,56,58,1,2,True,True
+B08,claude-opus-5,Kyrgyzstan,3,33.333333333333336,0.5773502691896263,33,34,1,1,True,True
+B08,claude-opus-5,United States,3,35.0,1.7320508075688772,33,36,1,3,True,True
+B08,gemini-3.6-flash,Kyrgyzstan,3,38.0,0.0,38,38,1,0,True,True
+B08,gemini-3.6-flash,United States,3,37.333333333333336,1.1547005383792526,36,38,1,2,True,True
+B08,gpt-5.6-sol,Kyrgyzstan,3,52.666666666666664,5.033222956847165,48,58,2,10,False,True
+B08,gpt-5.6-sol,United States,3,60.666666666666664,4.932882862316246,55,64,2,9,False,True
+S01,claude-opus-5,Kyrgyzstan,3,67.33333333333333,1.1547005383792526,66,68,1,2,True,True
+S01,claude-opus-5,United States,3,68.66666666666667,1.1547005383792495,68,70,1,2,True,True
+S01,gemini-3.6-flash,Kyrgyzstan,3,78.0,0.0,78,78,1,0,True,True
+S01,gemini-3.6-flash,United States,3,81.66666666666667,3.511884584284246,78,85,1,7,True,True
+S01,gpt-5.6-sol,Kyrgyzstan,3,76.0,2.6457513110645907,73,78,2,5,False,True
+S01,gpt-5.6-sol,United States,3,79.33333333333333,2.309401076758502,78,82,1,4,True,True
+S04,claude-opus-5,Kyrgyzstan,3,62.666666666666664,1.1547005383792526,62,64,1,2,True,True
+S04,claude-opus-5,United States,3,65.33333333333333,1.1547005383792526,64,66,1,2,True,True
+S04,gemini-3.6-flash,Kyrgyzstan,3,74.66666666666667,2.309401076758502,72,76,1,4,True,True
+S04,gemini-3.6-flash,United States,3,75.33333333333333,0.5773502691896247,75,76,1,1,True,True
+S04,gpt-5.6-sol,Kyrgyzstan,3,75.66666666666667,0.5773502691896247,75,76,1,1,True,True
+S04,gpt-5.6-sol,United States,3,77.33333333333333,1.1547005383792495,76,78,1,2,True,True
+S07,claude-opus-5,Kyrgyzstan,3,64.33333333333333,1.5275252316519485,63,66,1,3,True,True
+S07,claude-opus-5,United States,3,65.33333333333333,1.1547005383792526,64,66,1,2,True,True
+S07,gemini-3.6-flash,Kyrgyzstan,3,73.33333333333333,2.309401076758505,72,76,1,4,True,True
+S07,gemini-3.6-flash,United States,3,76.66666666666667,1.1547005383792495,76,78,1,2,True,True
+S07,gpt-5.6-sol,Kyrgyzstan,3,74.33333333333333,1.5275252316519485,73,76,1,3,True,True
+S07,gpt-5.6-sol,United States,3,77.33333333333333,0.5773502691896247,77,78,1,1,True,True
+W01,claude-opus-5,Kyrgyzstan,3,12.666666666666666,1.1547005383792515,12,14,1,2,True,True
+W01,claude-opus-5,United States,3,13.333333333333334,2.081665999466133,11,15,1,4,True,True
+W01,gemini-3.6-flash,Kyrgyzstan,3,20.666666666666668,2.309401076758503,18,22,1,4,True,True
+W01,gemini-3.6-flash,United States,3,18.333333333333332,3.511884584284246,15,22,1,7,True,True
+W01,gpt-5.6-sol,Kyrgyzstan,3,22.333333333333332,0.5773502691896255,22,23,1,1,True,True
+W01,gpt-5.6-sol,United States,3,24.0,0.0,24,24,1,0,True,True
+W03,claude-opus-5,Kyrgyzstan,3,11.666666666666666,1.1547005383792515,11,13,1,2,True,True
+W03,claude-opus-5,United States,3,11.0,0.0,11,11,1,0,True,True
+W03,gemini-3.6-flash,Kyrgyzstan,3,18.666666666666668,1.1547005383792517,18,20,1,2,True,True
+W03,gemini-3.6-flash,United States,3,18.0,0.0,18,18,1,0,True,True
+W03,gpt-5.6-sol,Kyrgyzstan,3,23.333333333333332,1.154700538379251,22,24,1,2,True,True
+W03,gpt-5.6-sol,United States,3,23.333333333333332,1.1547005383792517,22,24,1,2,True,True

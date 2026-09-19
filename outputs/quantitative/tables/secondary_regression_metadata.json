@@ -1,0 +1,12 @@
+{
+  "status": "secondary_sensitivity_only",
+  "n_scenario_clusters": 8,
+  "covariance": "scenario-clustered",
+  "warning_count": 1,
+  "warnings": [
+    {
+      "category": "ValueWarning",
+      "message": "covariance of constraints does not have full rank. The number of constraints is 10, but rank is 3"
+    }
+  ]
+}

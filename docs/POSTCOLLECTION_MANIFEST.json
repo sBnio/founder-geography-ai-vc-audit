@@ -1,0 +1,48 @@
+{
+  "format_version": 1,
+  "created_at_utc": "2026-08-22T09:13:04.051492+00:00",
+  "raw_attempt_records": 475,
+  "unique_planned_run_ids_seen": 360,
+  "unique_successful_run_ids": 360,
+  "error_attempt_records": 115,
+  "first_attempt_timestamp_utc": "2026-08-16T13:16:08.476016+00:00",
+  "last_attempt_timestamp_utc": "2026-08-22T09:06:45.979629+00:00",
+  "raw_backup_verified_identical": true,
+  "files": {
+    "raw_responses": {
+      "path": "data/raw/responses.jsonl",
+      "size_bytes": 6634055,
+      "sha256": "2ef8fb26b624a8f8821c7ca0251eb4800e50f17c67321c451f3683e7b11b7c5b"
+    },
+    "raw_read_only_backup": {
+      "path": "data/raw/backup/responses_20260822T091304Z.jsonl",
+      "size_bytes": 6634055,
+      "sha256": "2ef8fb26b624a8f8821c7ca0251eb4800e50f17c67321c451f3683e7b11b7c5b"
+    },
+    "processed_responses": {
+      "path": "data/processed/responses.csv",
+      "size_bytes": 1047428,
+      "sha256": "bd778f02b096a3e92c26a1d9c7c6337bb9c7210baaed92a908289098aa44ed95"
+    },
+    "run_manifest": {
+      "path": "data/processed/run_manifest.jsonl",
+      "size_bytes": 1333416,
+      "sha256": "bcd1eb14261202384161a745ade797165a73fe9308d30875ba22fd665c57ef77"
+    },
+    "run_manifest_sha256_sidecar": {
+      "path": "data/processed/run_manifest.jsonl.sha256",
+      "size_bytes": 85,
+      "sha256": "c4e76af3c0e95a8581ad8629fa31aed6faf7949f77ba571e49bbe9f9e0c2fcc4"
+    },
+    "scientific_freeze_manifest": {
+      "path": "docs/FREEZE_MANIFEST.json",
+      "size_bytes": 8390,
+      "sha256": "8bb3ffc092f10d3339dd54225bb148e340d96d32a20784ec34c52ec14f897edf"
+    },
+    "precollection_environment": {
+      "path": "docs/PRECOLLECTION_ENVIRONMENT.json",
+      "size_bytes": 1552,
+      "sha256": "12031cd74c576ff3e550dbf82d31d8f072287e4941a4c58bfec85f636ea12f8d"
+    }
+  }
+}

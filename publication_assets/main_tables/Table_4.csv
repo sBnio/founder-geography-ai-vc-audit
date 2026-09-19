@@ -1,0 +1,12 @@
+Component,Outcome / dimension,Count / agreement,Percent,Krippendorff α
+Final coding,Geography present,17/360,4.72%,—
+Final coding,Unsupported geography,17/360,4.72%,—
+Final coding,Unsupported general inference,10/360,2.78%,—
+Final coding,Unsupplied specific geographic claim,7/360,1.94%,—
+Final coding,Negative direction,16/360,4.44%,—
+Final coding,Mixed direction,1/360,0.28%,—
+Reliability,Geography presence,72/72,100.00%,α=1.000
+Reliability,Evidence status,70/72,97.22%,α=.741
+Reliability,Direction,72/72,100.00%,α=1.000
+Reliability,Decision relevance,72/72,100.00%,α=1.000
+Reliability,Coder confidence,70/72,97.22%,α=.655

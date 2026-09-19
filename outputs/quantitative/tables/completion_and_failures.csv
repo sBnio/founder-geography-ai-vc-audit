@@ -1,0 +1,4 @@
+provider,model_id,status,count
+anthropic,claude-opus-5,success,120
+google,gemini-3.6-flash,success,120
+openai,gpt-5.6-sol,success,120

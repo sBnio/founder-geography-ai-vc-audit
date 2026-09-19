@@ -1,0 +1,9 @@
+{
+  "n_complete_blocks": 24,
+  "n_simulations": 200000,
+  "seed": 20260720,
+  "observed_mean_block_gap": -1.986111111111111,
+  "observed_abs_mean_block_gap": 1.986111111111111,
+  "extreme_simulations": 68,
+  "plus_one_corrected_two_sided_p": 0.000344998275008625
+}

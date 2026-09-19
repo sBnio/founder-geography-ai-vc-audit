@@ -1,0 +1,712 @@
+from __future__ import annotations
+
+import os
+from copy import deepcopy
+from typing import Any
+
+import httpx
+
+from scripts.schemas import evaluation_api_schema
+
+
+DEFAULT_TIMEOUT_SECONDS = 240.0
+
+
+class ProviderCallError(RuntimeError):
+    """Provider/API error with preserved raw response and metadata."""
+
+    def __init__(
+        self,
+        message: str,
+        raw_response_text: str | None = None,
+        provider_metadata: dict[str, Any] | None = None,
+    ) -> None:
+        super().__init__(message)
+        self.raw_response_text = raw_response_text
+        self.provider_metadata = provider_metadata
+
+
+def _required_env(name: str) -> str:
+    """Return a required environment variable without ever printing its value."""
+    value = os.environ.get(name, "").strip()
+    if not value:
+        raise ProviderCallError(f"Missing required environment variable: {name}")
+    return value
+
+
+def _request_json(
+    url: str,
+    *,
+    headers: dict[str, str],
+    payload: dict[str, Any],
+    timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
+) -> tuple[dict[str, Any], dict[str, str]]:
+    """POST JSON and preserve provider errors for the append-only audit log."""
+    timeout = httpx.Timeout(
+        timeout_seconds,
+        connect=30.0,
+        read=timeout_seconds,
+        write=60.0,
+        pool=30.0,
+    )
+
+    try:
+        response = httpx.post(
+            url,
+            headers=headers,
+            json=payload,
+            timeout=timeout,
+        )
+    except httpx.RequestError as exc:
+        raise ProviderCallError(
+            f"Network error while calling provider: {exc}"
+        ) from exc
+
+    response_headers = {
+        key.lower(): value
+        for key, value in response.headers.items()
+        if key.lower()
+        in {
+            "request-id",
+            "x-request-id",
+            "openai-request-id",
+            "anthropic-request-id",
+            "x-goog-request-id",
+            "retry-after",
+        }
+    }
+
+    if response.is_error:
+        try:
+            body: Any = response.json()
+        except ValueError:
+            body = response.text
+
+        raise ProviderCallError(
+            f"HTTP {response.status_code}: {body}",
+            raw_response_text=response.text,
+            provider_metadata={
+                "http_status": response.status_code,
+                "response_headers": response_headers,
+                "error_body": body,
+            },
+        )
+
+    try:
+        data = response.json()
+    except ValueError as exc:
+        raise ProviderCallError(
+            "Provider returned a non-JSON HTTP response.",
+            raw_response_text=response.text,
+            provider_metadata={
+                "http_status": response.status_code,
+                "response_headers": response_headers,
+            },
+        ) from exc
+
+    if not isinstance(data, dict):
+        raise ProviderCallError(
+            "Provider returned JSON that was not an object.",
+            raw_response_text=response.text,
+            provider_metadata={
+                "http_status": response.status_code,
+                "response_headers": response_headers,
+                "raw_json": data,
+            },
+        )
+
+    return data, response_headers
+
+
+def _estimated_cost(
+    settings: dict[str, Any],
+    input_tokens: int | None,
+    billed_output_tokens: int | None,
+) -> float | None:
+    """Estimate standard token cost from prices frozen in experiment.json."""
+    if input_tokens is None or billed_output_tokens is None:
+        return None
+
+    input_price = float(settings.get("input_price_per_million_usd", 0.0))
+    output_price = float(settings.get("output_price_per_million_usd", 0.0))
+
+    return round(
+        (input_tokens / 1_000_000) * input_price
+        + (billed_output_tokens / 1_000_000) * output_price,
+        8,
+    )
+
+
+def _constraint_note(keyword: str, value: Any) -> str | None:
+    notes = {
+        "minimum": f"Value must be at least {value}.",
+        "maximum": f"Value must be at most {value}.",
+        "exclusiveMinimum": f"Value must be greater than {value}.",
+        "exclusiveMaximum": f"Value must be less than {value}.",
+        "multipleOf": f"Value must be a multiple of {value}.",
+        "minLength": f"Text must contain at least {value} characters.",
+        "maxLength": f"Text must contain at most {value} characters.",
+        "minItems": f"Array must contain at least {value} items.",
+        "maxItems": f"Array must contain at most {value} items.",
+        "uniqueItems": "Array items must be unique.",
+        "minProperties": f"Object must contain at least {value} properties.",
+        "maxProperties": f"Object must contain at most {value} properties.",
+    }
+    return notes.get(keyword)
+
+
+def _anthropic_compatible_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """
+    Transform the research JSON Schema for Anthropic structured outputs.
+
+    Anthropic's raw REST structured-output endpoint does not accept several
+    validation keywords generated by Pydantic, including numeric and string
+    bounds. We remove those keywords from the schema sent to Claude, preserve
+    their meaning in descriptions, and still enforce every original constraint
+    locally with Pydantic in scripts/collect.py.
+    """
+    unsupported_constraints = {
+        "minimum",
+        "maximum",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
+        "multipleOf",
+        "minLength",
+        "maxLength",
+        "minItems",
+        "maxItems",
+        "uniqueItems",
+        "minProperties",
+        "maxProperties",
+    }
+
+    def transform(node: Any) -> Any:
+        if isinstance(node, list):
+            return [transform(item) for item in node]
+
+        if not isinstance(node, dict):
+            return node
+
+        cleaned: dict[str, Any] = {}
+        notes: list[str] = []
+
+        for key, value in node.items():
+            if key in unsupported_constraints:
+                note = _constraint_note(key, value)
+                if note:
+                    notes.append(note)
+                continue
+            cleaned[key] = transform(value)
+
+        if cleaned.get("type") == "object":
+            cleaned.setdefault("additionalProperties", False)
+
+        if notes:
+            existing = str(cleaned.get("description", "")).strip()
+            combined = " ".join(notes)
+            cleaned["description"] = (
+                f"{existing} {combined}".strip()
+                if existing
+                else combined
+            )
+
+        return cleaned
+
+    return transform(deepcopy(schema))
+
+
+def _google_compatible_schema(schema: dict[str, Any]) -> dict[str, Any]:
+    """
+    Remove JSON Schema keywords not documented for Gemini structured output.
+
+    Gemini supports numeric minimum/maximum and array minItems/maxItems, so
+    those remain. String-length constraints are kept in descriptions and are
+    still enforced locally by Pydantic after generation.
+    """
+    unsupported_constraints = {
+        "minLength",
+        "maxLength",
+        "pattern",
+        "exclusiveMinimum",
+        "exclusiveMaximum",
+        "multipleOf",
+        "uniqueItems",
+        "minProperties",
+        "maxProperties",
+    }
+
+    def transform(node: Any) -> Any:
+        if isinstance(node, list):
+            return [transform(item) for item in node]
+
+        if not isinstance(node, dict):
+            return node
+
+        cleaned: dict[str, Any] = {}
+        notes: list[str] = []
+
+        for key, value in node.items():
+            if key in unsupported_constraints:
+                note = _constraint_note(key, value)
+                if note:
+                    notes.append(note)
+                continue
+            cleaned[key] = transform(value)
+
+        if notes:
+            existing = str(cleaned.get("description", "")).strip()
+            combined = " ".join(notes)
+            cleaned["description"] = (
+                f"{existing} {combined}".strip()
+                if existing
+                else combined
+            )
+
+        return cleaned
+
+    return transform(deepcopy(schema))
+
+
+def _openai_output_text(data: dict[str, Any]) -> str:
+    direct = data.get("output_text")
+    if isinstance(direct, str) and direct.strip():
+        return direct
+
+    pieces: list[str] = []
+    for output_item in data.get("output", []) or []:
+        if not isinstance(output_item, dict):
+            continue
+        for content in output_item.get("content", []) or []:
+            if not isinstance(content, dict):
+                continue
+            if content.get("type") in {"output_text", "text"}:
+                text = content.get("text")
+                if isinstance(text, str):
+                    pieces.append(text)
+
+    return "".join(pieces)
+
+
+def call_openai(
+    row: dict[str, Any],
+    settings: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    key = _required_env("OPENAI_API_KEY")
+    schema = evaluation_api_schema()
+
+    payload: dict[str, Any] = {
+        "model": row["model_id"],
+        "input": [
+            {
+                "role": "system",
+                "content": row["system_prompt"],
+            },
+            {
+                "role": "user",
+                "content": row["user_prompt"],
+            },
+        ],
+        "reasoning": {
+            "effort": settings.get("reasoning_effort", "high"),
+        },
+        "max_output_tokens": int(
+            settings.get("max_output_tokens", 16000)
+        ),
+        "store": False,
+        "text": {
+            "verbosity": settings.get("verbosity", "low"),
+            "format": {
+                "type": "json_schema",
+                "name": "venture_evaluation",
+                "strict": True,
+                "schema": schema,
+            },
+        },
+    }
+
+    data, response_headers = _request_json(
+        "https://api.openai.com/v1/responses",
+        headers={
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+        },
+        payload=payload,
+    )
+
+    text = _openai_output_text(data)
+    if not text.strip():
+        raise ProviderCallError(
+            "OpenAI response contained no output text.",
+            provider_metadata={
+                "provider": "openai",
+                "response_headers": response_headers,
+                "raw": data,
+            },
+        )
+
+    if data.get("status") == "incomplete":
+        raise ProviderCallError(
+            f"OpenAI response was incomplete: {data.get('incomplete_details')}",
+            raw_response_text=text,
+            provider_metadata={
+                "provider": "openai",
+                "response_headers": response_headers,
+                "raw": data,
+            },
+        )
+
+    usage = data.get("usage", {}) or {}
+    output_details = usage.get("output_tokens_details", {}) or {}
+
+    input_tokens = usage.get("input_tokens")
+    billed_output_tokens = usage.get("output_tokens")
+    reasoning_tokens = output_details.get("reasoning_tokens")
+
+    visible_output_tokens = billed_output_tokens
+    if (
+        isinstance(billed_output_tokens, int)
+        and isinstance(reasoning_tokens, int)
+    ):
+        visible_output_tokens = max(
+            0,
+            billed_output_tokens - reasoning_tokens,
+        )
+
+    standard_usage = {
+        "input_tokens": input_tokens,
+        "visible_output_tokens": visible_output_tokens,
+        "reasoning_tokens": reasoning_tokens,
+        "billed_output_tokens": billed_output_tokens,
+        "total_tokens": usage.get("total_tokens"),
+        "cached_input_tokens": (
+            (usage.get("input_tokens_details") or {}).get("cached_tokens")
+        ),
+    }
+    standard_usage["estimated_cost_usd"] = _estimated_cost(
+        settings,
+        input_tokens,
+        billed_output_tokens,
+    )
+
+    metadata = {
+        "provider": "openai",
+        "request_id": data.get("id")
+        or response_headers.get("x-request-id")
+        or response_headers.get("openai-request-id"),
+        "actual_model_returned": data.get("model") or row["model_id"],
+        "status": data.get("status"),
+        "standard_usage": standard_usage,
+        "response_headers": response_headers,
+        "raw": data,
+    }
+    return text, metadata
+
+
+def call_anthropic(
+    row: dict[str, Any],
+    settings: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    key = _required_env("ANTHROPIC_API_KEY")
+    schema = _anthropic_compatible_schema(evaluation_api_schema())
+
+    payload: dict[str, Any] = {
+        "model": row["model_id"],
+        "max_tokens": int(settings.get("max_output_tokens", 16000)),
+        "system": row["system_prompt"],
+        "messages": [
+            {
+                "role": "user",
+                "content": row["user_prompt"],
+            }
+        ],
+        "output_config": {
+            "effort": settings.get("reasoning_effort", "high"),
+            "format": {
+                "type": "json_schema",
+                "schema": schema,
+            },
+        },
+    }
+
+    data, response_headers = _request_json(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+        },
+        payload=payload,
+    )
+
+    text_parts = [
+        block.get("text", "")
+        for block in data.get("content", []) or []
+        if isinstance(block, dict) and block.get("type") == "text"
+    ]
+    text = "".join(part for part in text_parts if isinstance(part, str))
+
+    stop_reason = data.get("stop_reason")
+    if stop_reason in {"max_tokens", "refusal"}:
+        raise ProviderCallError(
+            f"Anthropic response stopped with stop_reason={stop_reason}",
+            raw_response_text=text or None,
+            provider_metadata={
+                "provider": "anthropic",
+                "response_headers": response_headers,
+                "raw": data,
+            },
+        )
+
+    if not text.strip():
+        raise ProviderCallError(
+            "Anthropic response contained no text block.",
+            provider_metadata={
+                "provider": "anthropic",
+                "response_headers": response_headers,
+                "raw": data,
+            },
+        )
+
+    usage = data.get("usage", {}) or {}
+    input_tokens = usage.get("input_tokens")
+    billed_output_tokens = usage.get("output_tokens")
+
+    standard_usage = {
+        "input_tokens": input_tokens,
+        "visible_output_tokens": billed_output_tokens,
+        "reasoning_tokens": usage.get("thinking_tokens"),
+        "billed_output_tokens": billed_output_tokens,
+        "total_tokens": (
+            input_tokens + billed_output_tokens
+            if isinstance(input_tokens, int)
+            and isinstance(billed_output_tokens, int)
+            else None
+        ),
+        "cache_creation_input_tokens": usage.get(
+            "cache_creation_input_tokens"
+        ),
+        "cache_read_input_tokens": usage.get("cache_read_input_tokens"),
+    }
+    standard_usage["estimated_cost_usd"] = _estimated_cost(
+        settings,
+        input_tokens,
+        billed_output_tokens,
+    )
+
+    metadata = {
+        "provider": "anthropic",
+        "request_id": data.get("id")
+        or response_headers.get("request-id")
+        or response_headers.get("anthropic-request-id"),
+        "actual_model_returned": data.get("model") or row["model_id"],
+        "stop_reason": stop_reason,
+        "stop_sequence": data.get("stop_sequence"),
+        "standard_usage": standard_usage,
+        "response_headers": response_headers,
+        "raw": data,
+    }
+    return text, metadata
+
+
+def call_google(
+    row: dict[str, Any],
+    settings: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    key = _required_env("GOOGLE_API_KEY")
+    model = row["model_id"]
+    schema = _google_compatible_schema(evaluation_api_schema())
+
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/models/"
+        f"{model}:generateContent"
+    )
+
+    payload: dict[str, Any] = {
+        "systemInstruction": {
+            "parts": [{"text": row["system_prompt"]}],
+        },
+        "contents": [
+            {
+                "role": "user",
+                "parts": [{"text": row["user_prompt"]}],
+            }
+        ],
+        "generationConfig": {
+            "maxOutputTokens": int(
+                settings.get("max_output_tokens", 16000)
+            ),
+            "thinkingConfig": {
+                "thinkingLevel": settings.get("thinking_level", "high"),
+                "includeThoughts": False,
+            },
+            "responseMimeType": "application/json",
+            "responseJsonSchema": schema,
+        },
+    }
+
+    data, response_headers = _request_json(
+        url,
+        headers={
+            "x-goog-api-key": key,
+            "Content-Type": "application/json",
+        },
+        payload=payload,
+    )
+
+    candidates = data.get("candidates", []) or []
+    if not candidates:
+        raise ProviderCallError(
+            "Google response contained no candidates.",
+            provider_metadata={
+                "provider": "google",
+                "response_headers": response_headers,
+                "prompt_feedback": data.get("promptFeedback"),
+                "raw": data,
+            },
+        )
+
+    candidate = candidates[0]
+    finish_reason = candidate.get("finishReason")
+
+    parts = (candidate.get("content") or {}).get("parts", []) or []
+    text = "".join(
+        part.get("text", "")
+        for part in parts
+        if isinstance(part, dict)
+        and not part.get("thought", False)
+        and isinstance(part.get("text"), str)
+    )
+
+    if finish_reason not in {None, "STOP"}:
+        raise ProviderCallError(
+            f"Google response ended with finishReason={finish_reason}",
+            raw_response_text=text or None,
+            provider_metadata={
+                "provider": "google",
+                "response_headers": response_headers,
+                "finish_reason": finish_reason,
+                "safety_ratings": candidate.get("safetyRatings"),
+                "raw": data,
+            },
+        )
+
+    if not text.strip():
+        raise ProviderCallError(
+            "Google response contained no non-thought text.",
+            provider_metadata={
+                "provider": "google",
+                "response_headers": response_headers,
+                "finish_reason": finish_reason,
+                "raw": data,
+            },
+        )
+
+    usage = data.get("usageMetadata", {}) or {}
+    input_tokens = usage.get("promptTokenCount")
+    visible_output_tokens = usage.get("candidatesTokenCount")
+    reasoning_tokens = usage.get("thoughtsTokenCount")
+
+    billed_output_tokens: int | None = None
+    if isinstance(visible_output_tokens, int):
+        billed_output_tokens = visible_output_tokens
+        if isinstance(reasoning_tokens, int):
+            billed_output_tokens += reasoning_tokens
+
+    standard_usage = {
+        "input_tokens": input_tokens,
+        "visible_output_tokens": visible_output_tokens,
+        "reasoning_tokens": reasoning_tokens,
+        "billed_output_tokens": billed_output_tokens,
+        "total_tokens": usage.get("totalTokenCount"),
+        "cached_input_tokens": usage.get("cachedContentTokenCount"),
+    }
+    standard_usage["estimated_cost_usd"] = _estimated_cost(
+        settings,
+        input_tokens,
+        billed_output_tokens,
+    )
+
+    metadata = {
+        "provider": "google",
+        "request_id": data.get("responseId")
+        or response_headers.get("x-goog-request-id"),
+        "actual_model_returned": data.get("modelVersion") or model,
+        "finish_reason": finish_reason,
+        "standard_usage": standard_usage,
+        "response_headers": response_headers,
+        "raw": data,
+    }
+    return text, metadata
+
+
+def call_openai_compatible(
+    row: dict[str, Any],
+    settings: dict[str, Any],
+) -> tuple[str, dict[str, Any]]:
+    """Optional adapter for a future OpenAI-compatible provider."""
+    key = _required_env("OPENAI_COMPATIBLE_API_KEY")
+    base = str(settings["base_url"]).rstrip("/")
+
+    payload: dict[str, Any] = {
+        "model": row["model_id"],
+        "messages": [
+            {
+                "role": "system",
+                "content": row["system_prompt"],
+            },
+            {
+                "role": "user",
+                "content": row["user_prompt"],
+            },
+        ],
+        "max_tokens": int(settings.get("max_output_tokens", 16000)),
+        "response_format": {"type": "json_object"},
+    }
+
+    data, response_headers = _request_json(
+        f"{base}/chat/completions",
+        headers={
+            "Authorization": f"Bearer {key}",
+            "Content-Type": "application/json",
+        },
+        payload=payload,
+    )
+
+    try:
+        text = data["choices"][0]["message"]["content"]
+    except (KeyError, IndexError, TypeError) as exc:
+        raise ProviderCallError(
+            "OpenAI-compatible response had an unexpected shape.",
+            provider_metadata={
+                "provider": "openai_compatible",
+                "response_headers": response_headers,
+                "raw": data,
+            },
+        ) from exc
+
+    usage = data.get("usage", {}) or {}
+    input_tokens = usage.get("prompt_tokens")
+    billed_output_tokens = usage.get("completion_tokens")
+
+    standard_usage = {
+        "input_tokens": input_tokens,
+        "visible_output_tokens": billed_output_tokens,
+        "reasoning_tokens": None,
+        "billed_output_tokens": billed_output_tokens,
+        "total_tokens": usage.get("total_tokens"),
+    }
+    standard_usage["estimated_cost_usd"] = _estimated_cost(
+        settings,
+        input_tokens,
+        billed_output_tokens,
+    )
+
+    return text, {
+        "provider": "openai_compatible",
+        "request_id": data.get("id")
+        or response_headers.get("x-request-id"),
+        "actual_model_returned": data.get("model") or row["model_id"],
+        "standard_usage": standard_usage,
+        "response_headers": response_headers,
+        "raw": data,
+    }

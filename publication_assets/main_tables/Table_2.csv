@@ -1,0 +1,10 @@
+Quantity,Estimate / result,Role
+Mean scenario-level KG − US gap,-1.99,Primary effect estimate
+Median scenario-level gap,-2.06,Descriptive
+Exact two-sided sign-flip p,0.0625,PRIMARY TEST
+Bootstrap 95% interval,"[-3.64, -0.61]",Supporting
+t-based 95% interval,"[-3.95, -0.02]",Secondary
+TOST ±3 points,p=0.1308; not equivalent,Sensitivity
+TOST ±5 points,p=0.0042; equivalent,Prespecified equivalence
+TOST ±10 points,p=0.000014; equivalent,Sensitivity
+TOST 90% interval,"[-3.56, -0.41]",Equivalence interval

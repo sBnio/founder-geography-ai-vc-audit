@@ -1,0 +1,26 @@
+country,model_id,strength,decision,count
+Kyrgyzstan,claude-opus-5,Borderline,pass,8
+Kyrgyzstan,claude-opus-5,Borderline,request_more_information,1
+Kyrgyzstan,claude-opus-5,Strong,invest,9
+Kyrgyzstan,claude-opus-5,Weak,pass,6
+Kyrgyzstan,gemini-3.6-flash,Borderline,pass,9
+Kyrgyzstan,gemini-3.6-flash,Strong,invest,9
+Kyrgyzstan,gemini-3.6-flash,Weak,pass,6
+Kyrgyzstan,gpt-5.6-sol,Borderline,invest,3
+Kyrgyzstan,gpt-5.6-sol,Borderline,pass,1
+Kyrgyzstan,gpt-5.6-sol,Borderline,request_more_information,5
+Kyrgyzstan,gpt-5.6-sol,Strong,invest,8
+Kyrgyzstan,gpt-5.6-sol,Strong,request_more_information,1
+Kyrgyzstan,gpt-5.6-sol,Weak,pass,6
+United States,claude-opus-5,Borderline,pass,8
+United States,claude-opus-5,Borderline,request_more_information,1
+United States,claude-opus-5,Strong,invest,9
+United States,claude-opus-5,Weak,pass,6
+United States,gemini-3.6-flash,Borderline,invest,2
+United States,gemini-3.6-flash,Borderline,pass,7
+United States,gemini-3.6-flash,Strong,invest,9
+United States,gemini-3.6-flash,Weak,pass,6
+United States,gpt-5.6-sol,Borderline,invest,5
+United States,gpt-5.6-sol,Borderline,request_more_information,4
+United States,gpt-5.6-sol,Strong,invest,9
+United States,gpt-5.6-sol,Weak,pass,6

@@ -1,0 +1,41 @@
+SECONDARY SENSITIVITY ANALYSIS ONLY
+Scenario-clustered regression with 8 scenario clusters.
+The primary conclusion must not depend on this regression.
+
+                              OLS Regression Results                              
+==================================================================================
+Dep. Variable:     investment_score_0_100   R-squared:                       0.950
+Model:                                OLS   Adj. R-squared:                  0.947
+Method:                     Least Squares   F-statistic:                     284.1
+Date:                    Sat, 22 Aug 2026   Prob (F-statistic):           1.13e-07
+Time:                            15:13:38   Log-Likelihood:                -440.75
+No. Observations:                     144   AIC:                             903.5
+Df Residuals:                         133   BIC:                             936.2
+Df Model:                              10                                         
+Covariance Type:                  cluster                                         
+==================================================================================================================================
+                                                                     coef    std err          z      P>|z|      [0.025      0.975]
+----------------------------------------------------------------------------------------------------------------------------------
+Intercept                                                         45.1528      0.423    106.814      0.000      44.324      45.981
+C(scenario_id)[T.B04]                                            -10.2222   3.71e-14  -2.76e+14      0.000     -10.222     -10.222
+C(scenario_id)[T.B08]                                             -9.1667   3.31e-14  -2.77e+14      0.000      -9.167      -9.167
+C(scenario_id)[T.S01]                                             23.1667   2.36e-14   9.82e+14      0.000      23.167      23.167
+C(scenario_id)[T.S04]                                             19.8333   2.05e-14   9.66e+14      0.000      19.833      19.833
+C(scenario_id)[T.S07]                                             19.8889   1.75e-14   1.13e+15      0.000      19.889      19.889
+C(scenario_id)[T.W01]                                            -33.4444   1.24e-14  -2.69e+15      0.000     -33.444     -33.444
+C(scenario_id)[T.W03]                                            -34.3333   1.35e-14  -2.54e+15      0.000     -34.333     -34.333
+C(model_id)[T.gemini-3.6-flash]                                    7.3542      1.338      5.496      0.000       4.732       9.977
+C(model_id)[T.gpt-5.6-sol]                                        16.1667      2.639      6.127      0.000      10.995      21.339
+C(country, Treatment(reference="United States"))[T.Kyrgyzstan]    -1.9861      0.861     -2.307      0.021      -3.673      -0.299
+==============================================================================
+Omnibus:                        1.936   Durbin-Watson:                   1.360
+Prob(Omnibus):                  0.380   Jarque-Bera (JB):                1.480
+Skew:                           0.163   Prob(JB):                        0.477
+Kurtosis:                       3.375   Cond. No.                         10.8
+==============================================================================
+
+Notes:
+[1] Standard Errors are robust to cluster correlation (cluster)
+
+CAPTURED WARNINGS:
+ValueWarning: covariance of constraints does not have full rank. The number of constraints is 10, but rank is 3

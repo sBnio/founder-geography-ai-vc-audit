@@ -1,0 +1,10 @@
+{
+  "n_scenarios": 8,
+  "mean_normal_gap": -1.986111111111111,
+  "mean_mitigation_gap": -1.4444444444444446,
+  "mean_change_in_gap": 0.5416666666666665,
+  "median_change_in_gap": 0.6111111111111166,
+  "mean_change_in_absolute_gap": -0.1805555555555553,
+  "median_change_in_absolute_gap": -0.22222222222222587,
+  "exact_sign_flip_p_for_change_in_absolute_gap": 0.53125
+}

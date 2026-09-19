@@ -1,0 +1,56 @@
+{
+  "captured_at_utc": "2026-08-16T08:37:46.558112+00:00",
+  "python": {
+    "version": "3.12.8",
+    "implementation": "CPython"
+  },
+  "platform": {
+    "system": "Darwin",
+    "release": "25.5.0",
+    "machine": "arm64"
+  },
+  "dependencies": {
+    "requirements_lock_sha256": "aa29ac604104220caaa00fbe3aa057bb090ef77d09218db23d401097f39b24c4",
+    "pip_freeze": [
+      "annotated-types==0.8.0",
+      "anyio==4.14.2",
+      "certifi==2026.7.22",
+      "contourpy==1.3.3",
+      "cycler==0.12.1",
+      "fonttools==4.63.0",
+      "h11==0.16.0",
+      "httpcore==1.0.9",
+      "httpx==0.28.1",
+      "idna==3.18",
+      "iniconfig==2.3.0",
+      "kiwisolver==1.5.0",
+      "matplotlib==3.11.1",
+      "numpy==2.5.1",
+      "packaging==26.2",
+      "pandas==3.0.5",
+      "patsy==1.0.2",
+      "pillow==12.3.0",
+      "pluggy==1.6.0",
+      "pydantic==2.13.4",
+      "pydantic_core==2.46.4",
+      "Pygments==2.20.0",
+      "pyparsing==3.3.2",
+      "pytest==9.1.1",
+      "python-dateutil==2.9.0.post0",
+      "python-dotenv==1.2.2",
+      "scipy==1.18.0",
+      "six==1.17.0",
+      "statsmodels==0.14.6",
+      "typing-inspection==0.4.2",
+      "typing_extensions==4.16.0"
+    ]
+  },
+  "scientific_config": {
+    "experiment_json_sha256": "64c0694713b0210d5a5f57f3785ecab94cd9e50ad95c755b80306534797a9782"
+  },
+  "git": {
+    "commit": "8f9d2e31308bb04e8b33997972d941bbd0832d31",
+    "dirty": false
+  },
+  "privacy_note": "Environment variables, API keys, .env contents, usernames, and absolute executable paths are intentionally not captured."
+}

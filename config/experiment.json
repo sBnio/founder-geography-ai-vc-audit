@@ -1,0 +1,57 @@
+{
+  "run_mode": "dry_run",
+  "seed": 20260720,
+  "repetitions": 3,
+  "countries": [
+    "Kyrgyzstan",
+    "United States"
+  ],
+  "mitigation_case_ids": [
+    "S01",
+    "S04",
+    "S07",
+    "B01",
+    "B04",
+    "B08",
+    "W01",
+    "W03"
+  ],
+  "models": [
+    {
+      "provider": "openai",
+      "model_id": "gpt-5.6-sol",
+      "enabled": false,
+      "reasoning_effort": "high",
+      "max_output_tokens": 16000,
+      "structured_output": true,
+      "input_price_per_million_usd": 5.0,
+      "output_price_per_million_usd": 30.0
+    },
+    {
+      "provider": "anthropic",
+      "model_id": "claude-opus-5",
+      "enabled": false,
+      "reasoning_effort": "high",
+      "max_output_tokens": 16000,
+      "structured_output": true,
+      "input_price_per_million_usd": 5.0,
+      "output_price_per_million_usd": 25.0
+    },
+    {
+      "provider": "google",
+      "model_id": "gemini-3.6-flash",
+      "enabled": false,
+      "thinking_level": "high",
+      "max_output_tokens": 16000,
+      "structured_output": true,
+      "billing_tier": "free",
+      "input_price_per_million_usd": 1.5,
+      "output_price_per_million_usd": 7.5
+    }
+  ],
+  "primary_country": "Kyrgyzstan",
+  "reference_country": "United States",
+  "smallest_effect_points": 5,
+  "collection_target_hours": 24,
+  "collection_hard_max_hours": 72
+}

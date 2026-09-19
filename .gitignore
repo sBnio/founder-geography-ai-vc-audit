@@ -1,0 +1,30 @@
+# Secrets / credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local environments / caches
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.DS_Store
+__MACOSX/
+
+# Local IDE / OS files
+.vscode/
+.idea/
+
+# Private or working-only qualitative files
+*_PRIVATE_*
+PRIVATE_*
+
+# Raw backups are intentionally excluded; the canonical append-only log is data/raw/responses.jsonl
+data/raw/backup/
+
+# Public-release safety
+data/pilot/
+data/coding/PRIVATE_

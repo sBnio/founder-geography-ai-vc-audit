@@ -1,0 +1,7 @@
+model_id,country,n_cells,mean_score_sd,median_score_sd,mean_score_range,median_score_range,cells_with_identical_decisions,share_cells_identical_decisions
+claude-opus-5,Kyrgyzstan,8,1.8431014989332155,1.1547005383792526,3.5,2.0,7,0.875
+claude-opus-5,United States,8,1.6703424048310618,1.1547005383792526,3.0,2.0,7,0.875
+gemini-3.6-flash,Kyrgyzstan,8,1.4899787596331513,1.9184631542052237,2.625,3.5,8,1.0
+gemini-3.6-flash,United States,8,3.3471158017750504,1.154700538379251,6.25,2.0,7,0.875
+gpt-5.6-sol,Kyrgyzstan,8,2.2633520410764043,1.8045956155590412,4.375,3.5,4,0.5
+gpt-5.6-sol,United States,8,1.5820700645843526,1.1547005383792506,2.875,2.0,7,0.875

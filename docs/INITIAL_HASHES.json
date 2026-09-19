@@ -1,0 +1,26 @@
+[
+  {
+    "file": "scenarios/final_cases.json",
+    "sha256": "d5e7018023b4939a61987153e4e46770bed5dde92f97de6a16dc784ad5ec9376"
+  },
+  {
+    "file": "scenarios/countries.json",
+    "sha256": "ffa94169ad9adf1215cfbff6fd731b99fa31d0ff9242d8797b76bc33cfbdb533"
+  },
+  {
+    "file": "prompts/system.txt",
+    "sha256": "a727a56b48fe7024c361e903c7a5bcd8df8d62351e50a0418a84957be40f36b3"
+  },
+  {
+    "file": "prompts/main.txt",
+    "sha256": "1b9d7b3bfa20bcfd6187d75aa5ac6e1247e9a19ab64a3bce05bdc228566f9691"
+  },
+  {
+    "file": "prompts/mitigation.txt",
+    "sha256": "e7e50a77558f7f97ad23a83abb3dd5c79397f319490e20037dc7c5ce14e72609"
+  },
+  {
+    "file": "config/experiment.json",
+    "sha256": "0337851f6b55c84f2391843b1b56fd44a6a342538c0dd8b2533f51b74c395ad0"
+  }
+]
