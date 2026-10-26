@@ -28,4 +28,18 @@ The repository's own security audit passed. Additional inspection found live API
 
 ## Qualitative coding records
 
-The final archive includes the researcher's coding for all 360 responses, the independent second coder's 72-response sample, the adjudication records, and the final qualitative coding dataset. These files are available in `data/qualitative/` and can be checked using `analysis/verify_qualitative.py`.
+The final archive includes the researcher's completed coding for all 360 responses, the second coder's independent 72-response sample, the adjudication records, and the final qualitative coding dataset.
+
+These files are stored in data/qualitative/ and can be checked using:
+
+python analysis/verify_qualitative.py
+
+The archived qualitative verification reproduces the reported coding counts and pre-adjudication agreement statistics.
+
+## Scope of freeze verification
+
+The original precollection freeze manifest is preserved unchanged.
+
+The public repository omits eight original development files and includes post-study documentation and verification files. As a result, the original full-freeze verification script does not pass against this reduced public archive.
+
+All 41 original frozen files retained in this release were checked against the original manifest, and their hashes matched. Complete verification of the original frozen file set requires the original working archive.
