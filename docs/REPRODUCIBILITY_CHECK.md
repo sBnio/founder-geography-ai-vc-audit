@@ -26,6 +26,6 @@ Key reproduced results include:
 
 The repository's own security audit passed. Additional inspection found live API values in the local `.env` file, but `.env` was ignored, was not tracked by Git, and no likely live API keys were found in reachable tracked Git history. The clean archive excludes `.env` entirely.
 
-## Remaining reproducibility gap
+## Qualitative coding records
 
-The qualitative coder CSVs present in the supplied working archive were blank templates. The completed item-level human coding and adjudication record used for the paper were not present in that archive. Those files must be added before the repository is presented as a complete analysis archive.
+The final archive includes the researcher's coding for all 360 responses, the independent second coder's 72-response sample, the adjudication records, and the final qualitative coding dataset. These files are available in `data/qualitative/` and can be checked using `analysis/verify_qualitative.py`.
